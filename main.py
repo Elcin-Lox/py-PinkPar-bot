@@ -57,7 +57,7 @@ prod_cur.execute('''CREATE TABLE IF NOT EXISTS products(
 prod_db.commit()
 user_db.commit()
 
-admins = [7440902180, 8105455190]
+admins = [744090218, 810545519]
 
 
 def isAdmin(user_id: str) -> bool:
@@ -86,7 +86,7 @@ def presentForDb(data: str) -> list:
     for val_i in range(len(data)):
         if "-" in data[val_i] or "_" in data[val_i]:
             print(1)
-            #data[val_i] = data[val_i].replace("-", " ")
+            # data[val_i] = data[val_i].replace("-", " ")
             data[val_i] = data[val_i].replace("_", " ")
 
     data[2] = int(data[2])
@@ -125,6 +125,7 @@ def presentForUser(_place: str) -> str:
 
     return pres_str
 
+
 @dp.message_handler(commands=["start"])
 async def start(msg: types.Message):
     if isAdmin(msg.from_user.id):
@@ -135,14 +136,30 @@ async def start(msg: types.Message):
             user_cur.execute(f'''INSERT INTO users VALUES (?, ?)''', (str(msg.from_user.first_name), msg.from_user.id))
             user_db.commit()
             print("111")
-        await msg.answer("Добро пожаловать, {0.first_name}!\nЗдесь вы можете ознакомится с ассортиментом товара и ценами нашего магазина💥".format(msg.from_user), reply_markup=kb.main_kb)
+        await msg.answer(
+            "Добро пожаловать, {0.first_name}!\nЗдесь вы можете ознакомится с ассортиментом товара и ценами нашего магазина💥".format(
+                msg.from_user), reply_markup=kb.main_kb)
 
+
+@dp.message_handler(commands=["user"])
+async def make_user_view(msg: types.Message):
+    global admins
+    print(0)
+    if msg.from_user.id == 744090218 or msg.from_user.id == 810545519:
+        print(1)
+        if isAdmin(msg.from_user.id):
+            admins.remove(msg.from_user.id)
+            await msg.answer("Вы стали пользователем!")
+        else:
+            admins.append(msg.from_user.id)
+            await msg.answer("Вы стали админом!")
 
 
 @dp.message_handler(commands=["cancel"], state="*")
 async def cancel(msg: types.Message, state: FSMContext):
     await state.finish()
     await msg.answer("-- Главное меню --", reply_markup=kb.main_kb)
+
 
 @dp.message_handler()
 async def media(msg: types.Message):
@@ -151,7 +168,7 @@ async def media(msg: types.Message):
     if msg.text == "🧑🏼‍💻 Менеджер":
         await msg.answer("Сделать заказ:", reply_markup=kb.manage_inline_kb)
     if msg.text == '🛒 Ассортимент':
-        await msg.answer(MSG, parse_mode=types.ParseMode.HTML)
+        await msg.answer(MSG, parse_mode=types.ParseMode.HTML, reply_markup=kb.manage_inline_kb)
     if msg.text == 'Назад':
         await msg.answer('Главное меню', reply_markup=kb.main_kb)
 
@@ -159,7 +176,6 @@ async def media(msg: types.Message):
         await msg.answer(presentForUser("Л"), reply_markup=kb.manage_inline_l_kb, parse_mode="HTML")
     if msg.text == "Правый берег":
         await msg.answer(presentForUser('П'), reply_markup=kb.manage_inline_r_kb, parse_mode="HTML")
-
 
     if msg.text == 'Создать рассылку':
         if isAdmin(msg.from_user.id):
@@ -178,12 +194,11 @@ async def media(msg: types.Message):
             await DelProd.prod.set()
             await msg.answer("Введите номер строки, которую хотите удалить")
 
-    if msg.text == "111":
-        for value in user_cur.execute('''SELECT * FROM users'''):
-            print(value)
-    if msg.text == "222":
-        presentForUser("П")
-
+    # if msg.text == "111":
+    #    for value in user_cur.execute('''SELECT * FROM users'''):
+    #        print(value)
+    # if msg.text == "222":
+    #    presentForUser("П")
 
 
 @dp.message_handler(state=DelProd.prod)
