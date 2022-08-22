@@ -57,7 +57,7 @@ prod_cur.execute('''CREATE TABLE IF NOT EXISTS products(
 prod_db.commit()
 user_db.commit()
 
-admins = [7440902180, 8105455190]
+admins = [744090218, 810545519]
 
 
 def isAdmin(user_id: str) -> bool:
@@ -178,11 +178,11 @@ async def media(msg: types.Message):
             await DelProd.prod.set()
             await msg.answer("Введите номер строки, которую хотите удалить")
 
-    if msg.text == "111":
-        for value in user_cur.execute('''SELECT * FROM users'''):
-            print(value)
-    if msg.text == "222":
-        presentForUser("П")
+    #if msg.text == "111":
+    #    for value in user_cur.execute('''SELECT * FROM users'''):
+    #        print(value)
+    #if msg.text == "222":
+    #    presentForUser("П")
 
 
 
