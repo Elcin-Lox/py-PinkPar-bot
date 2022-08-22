@@ -151,7 +151,7 @@ async def media(msg: types.Message):
     if msg.text == "🧑🏼‍💻 Менеджер":
         await msg.answer("Сделать заказ:", reply_markup=kb.manage_inline_kb)
     if msg.text == '🛒 Ассортимент':
-        await msg.answer(MSG, parse_mode=types.ParseMode.HTML)
+        await msg.answer(MSG, parse_mode=types.ParseMode.HTML, reply_markup=kb.manage_inline_kb)
     if msg.text == 'Назад':
         await msg.answer('Главное меню', reply_markup=kb.main_kb)
 
