@@ -42,7 +42,7 @@ def get_names():
 
 MSG = f"""ЖИДКОСТИ 👇🏻 
 
-{"<b>"}➖ Hotspot Fuel (30ml SALT 50mg)➖
+➖ {"<b>"}Hotspot Fuel (30ml SALT 50mg)➖
 Цена: 350р{"</b>"}
 
 Вкусы:
@@ -56,14 +56,13 @@ MSG = f"""ЖИДКОСТИ 👇🏻
 ☘️🫐 Смородина Мята
 🍑🍈 Персик Маракуя
 
-{"<b>"}➖ HotSpot Don't Chew It (30ml SALT 50mg) ➖
+➖ {"<b>"}HotSpot Don't Chew It (30ml SALT 50mg) ➖
 Цена: 350р{"</b>"}
 
 Вкусы:
-🍏 Жвачка Спелое зеленое яблоко
 🥭 Жвачка Маракуя
 
-➖ {"<b>"}SMPL (30ml SALT 50mg) ➖
+➖{"<b>"} SMPL (30ml SALT 50mg) ➖
 Цена: 350р{"</b>"}
 
 Вкусы:
@@ -77,14 +76,14 @@ MSG = f"""ЖИДКОСТИ 👇🏻
 🥝Green - Киви с лаймом
 🍌Coral - Сладкий банан со льдом 
 
-{"<b>"}➖ Мишка (30ml SALT 50mg)➖
+➖ {"<b>"}Мишка (30ml SALT 50mg)➖
 Цена: 350р{"</b>"}
 
 Вкусы:
 🍩 Булочка с корицей
 🚬 Кремовый табак
 
-{"<b>"}➖ Морс Микс (30ml SALT 50mg) ➖
+➖ {"<b>"}Морс Микс (30ml SALT 50mg) ➖
 Цена: 350р{"</b>"}
 
 Вкусы:
@@ -95,54 +94,48 @@ MSG = f"""ЖИДКОСТИ 👇🏻
 🥝 Фьюжн 
 🍓 Южный
 
-{"<b>"}➖ Husky Premium (30ml SALT 45mg) ➖
+ ➖ {"<b>"}Husky Premium (30ml SALT 45mg) ➖
 Цена: 350р{"</b>"}
 
 Вкусы:
 🍈YELLOW KING - со вкусом медовой дыни, вьетнамской дыни, алоэ и льда 
 🥭BLOOD BOY - со вкусом австралийского, двойного и сладкого манго
 
-{"<b>"}➖ Husky Double Ice (30ml SALT 45mg) ➖
+➖ {"<b>"}Husky Double Ice (30ml SALT 45mg) ➖
 Цена: 330р{"</b>"}
 
 Вкусы:
 🧊🥭Artic strike
 🧊🍈North sweet 
-🧊 🥝Chilly Kiwi
 
- {"<b>"}➖ Husky Mint Series (30ml SALT 45mg) ➖
+ ➖ {"<b>"}Husky Mint Series (30ml SALT 45mg) ➖
 Цена: 330р{"</b>"}
 
 Вкусы:
 🌱🍋Citrus days 
 🌱🍇Juice grapes 
 🌱🫐Berry Hunter
-🌱🫐Blue up
 
- {"<b>"}➖ Gang (30ml SALT 50mg) ➖
+ ➖ {"<b>"}Gang (30ml SALT 50mg) ➖
 Цена: 300р{"</b>"}
 
 Вкусы:
-🫐 🥤 Фанта с Голубикой
 🫐 🍓 Черника Малина
-🍧 🍓 Малиновое Мороженое
-🍇 🍉 Фруктовый Мармелад
 🧊 🍉 Ледяной Арбуз
 🫐 🧊 Смородина Ежевика
 🫐 🍓 Ягодный Микс
 🍓 🥤 Клубника Ванильная кола
 
- {"<b>"}➖ NEW Gang Ice (30ml SALT 50mg) ➖
+ ➖ {"<b>"}NEW Gang Ice (30ml SALT 50mg) ➖
 Цена: 300р{"</b>"}
 
 Вкусы:
 🧊 🍇 Виноградный Бабл Гам
 🧊 🫐 Черничный Бабл Гам
-🧊 🥝 Фруктовый Бабл Гам
 🧊 🍊 Апельсиновый Бабл Гам
-🧊 🍓 Клубничный Бабл Гам
+🧊 🍓 Земляничный Бабл Гам
 
-{"<b>"}➖ MAD SALT (30ml SALT 60mg) ➖
+➖ {"<b>"}MAD SALT (30ml SALT 60mg) ➖
 Цена: 350р{"</b>"}
 
 Вкусы:
@@ -161,16 +154,13 @@ MSG = f"""ЖИДКОСТИ 👇🏻
 🍏 🍈 Яблоко Маракуя
 🥤 🍑 Летний лимонад
 
-{"<b>"}➖ Beast (30ml SALT 50mg) ➖
+➖ {"<b>"}Beast (30ml SALT 50mg) ➖
 Цена: 300р{"</b>"}
 
 Вкусы:
 💙Blue
-💖Pink 
-💜Purple 
-💛Yellow
 
-{"<b>"}➖ Toxic Salt (30ml SALT 50mg) ➖
+➖ {"<b>"}Toxic Salt (30ml SALT 50mg) ➖
 Цена: 300р{"</b>"}
 
 Вкусы:
