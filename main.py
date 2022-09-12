@@ -93,6 +93,12 @@ async def make_user_view(msg: types.Message):
             await msg.answer("-- Вид админа --", reply_markup=kb.admin_kb)
 
 
+@dp.message_handler(commands=["cancel"], state="*")
+async def cancel(msg: types.Message, state: FSMContext):
+    await state.finish()
+    await msg.answer("-- Главное меню --", reply_markup=kb.admin_kb)
+
+
 # -- Message handlers --
 @dp.message_handler()
 async def media(msg: types.Message):
@@ -158,7 +164,6 @@ async def process_accept(msg: types.Message, state):
     else:
         await state.finish()
         await msg.answer("-- Главное меню --", reply_markup=kb.admin_kb)
-
 
 
 if __name__ == "__main__":
