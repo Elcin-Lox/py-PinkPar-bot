@@ -8,12 +8,14 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 import logging
 import sqlite3
-from MessageAs import MSG
+from MessageAs import getMSG, setMSG
 import settings as st
-
-TOKEN = st.TOKEN
+from datetime import datetime as dt
 
 # --- Bot ---
+TOKEN = st.TOKEN
+admins = st.ADMINS
+
 bot = Bot(token=TOKEN, parse_mode=types.ParseMode.HTML)
 dp = Dispatcher(bot, storage=MemoryStorage())
 logging.basicConfig(level=logging.INFO)
@@ -24,40 +26,28 @@ class Mainling(StatesGroup):
     accept = State()
 
 
-class SetProd(StatesGroup):
-    prod = State()
-    accept = State()
-
-
-class DelProd(StatesGroup):
-    prod = State()
+class MainMsg(StatesGroup):
+    mess = State()
     accept = State()
 
 
 # --- DataBase's ---
 user_db = sqlite3.connect('user.db')
-prod_db = sqlite3.connect('product.db')
 
 user_cur = user_db.cursor()
-prod_cur = prod_db.cursor()
 
 user_cur.execute('''CREATE TABLE IF NOT EXISTS users(
                 name TEXT NOT NULL,
-                user_id BIGINT);
+                user_id BIGINT,
+                last_move DATETIME);
 ''')
 
-prod_cur.execute('''CREATE TABLE IF NOT EXISTS products(
-                name TEXT NOT NULL,
-                taste TEXT NOT NULL,
-                strength INTEGER,
-                price INTEGER,
-                place TEXT NOT NULL);
-''')
-
-prod_db.commit()
 user_db.commit()
 
-admins = [744090218, 810545519]
+
+def updateDB(user_id, cur, db):
+    cur.execute("""UPDATE users SET last_move = ? WHERE user_id = ?""", (dt.now(), user_id))
+    db.commit()
 
 
 def isAdmin(user_id: str) -> bool:
@@ -74,58 +64,7 @@ def isUserExists(_user_id: int, cur: sqlite3) -> bool:
     return False
 
 
-def presentForDb(data: str) -> list:
-    data = data.split(' ')
-
-    if len(data) != 5:
-        return []
-
-    if not data[2].isdigit() or not data[3].isdigit():
-        return []
-
-    for val_i in range(len(data)):
-        if "-" in data[val_i] or "_" in data[val_i]:
-            print(1)
-            # data[val_i] = data[val_i].replace("-", " ")
-            data[val_i] = data[val_i].replace("_", " ")
-
-    data[2] = int(data[2])
-    data[3] = int(data[3])
-    data[4] = data[4].upper()
-
-    return data
-
-
-def presentForUser(_place: str) -> str:
-    """     """
-    cur_name = ''
-    isNameUse = False
-
-    prod_cur.execute(f"SELECT * FROM products WHERE place = (?) ORDER BY name", _place)
-    all_prod = prod_cur.fetchall()
-
-    if len(all_prod) == 0:
-        return "Сожалеем... Пока в этом районе нет товара в наличии."
-
-    pres_str = "ЖИДКОСТИ 👇🏻\n"
-    for val in all_prod:
-        if val[0] != cur_name:
-            cur_name = val[0]
-            isNameUse = False
-
-        if isNameUse:
-            pres_str += val[1] + "\n"
-        else:
-            pres_str += fmt.hbold("\n➖ " + val[0] + " ➖ \n")
-            pres_str += fmt.hbold("Цена: " + str(val[3]) + "р\n\n") + "Вкусы: \n"
-            pres_str += val[1] + '\n'
-            isNameUse = True
-
-    pres_str += "\n Сделать заказ 👇"
-
-    return pres_str
-
-
+# -- Commands handlers --
 @dp.message_handler(commands=["start"])
 async def start(msg: types.Message):
     if isAdmin(msg.from_user.id):
@@ -133,34 +72,28 @@ async def start(msg: types.Message):
     else:
         user_cur.execute('''SELECT user_id FROM users ''')
         if not isUserExists(msg.from_user.id, user_cur):
-            user_cur.execute(f'''INSERT INTO users VALUES (?, ?)''', (str(msg.from_user.first_name), msg.from_user.id))
+            user_cur.execute(f'''INSERT INTO users VALUES (?, ?, ?)''',
+                             (str(msg.from_user.first_name), msg.from_user.id, dt.now()))
+            print(dt.now().isoformat(sep='T'))
             user_db.commit()
-            print("111")
         await msg.answer(
-            "Добро пожаловать, {0.first_name}!\nЗдесь вы можете ознакомится с ассортиментом товара и ценами нашего магазина💥".format(
-                msg.from_user), reply_markup=kb.main_kb)
+            "Добро пожаловать, {0.first_name}!\nЗдесь вы можете ознакомится с ассортиментом товара и ценами нашего "
+            "магазина💥".format(msg.from_user), reply_markup=kb.main_kb)
 
 
 @dp.message_handler(commands=["user"])
 async def make_user_view(msg: types.Message):
     global admins
-    print(0)
     if msg.from_user.id == 744090218 or msg.from_user.id == 810545519:
-        print(1)
         if isAdmin(msg.from_user.id):
             admins.remove(msg.from_user.id)
-            await msg.answer("Вы стали пользователем!")
+            await msg.answer("-- Вид пользователя --", reply_markup=kb.main_kb)
         else:
             admins.append(msg.from_user.id)
-            await msg.answer("Вы стали админом!")
+            await msg.answer("-- Вид админа --", reply_markup=kb.admin_kb)
 
 
-@dp.message_handler(commands=["cancel"], state="*")
-async def cancel(msg: types.Message, state: FSMContext):
-    await state.finish()
-    await msg.answer("-- Главное меню --", reply_markup=kb.main_kb)
-
-
+# -- Message handlers --
 @dp.message_handler()
 async def media(msg: types.Message):
     if msg.text == "📲 Соц. сети":
@@ -168,88 +101,40 @@ async def media(msg: types.Message):
     if msg.text == "🧑🏼‍💻 Менеджер":
         await msg.answer("Сделать заказ:", reply_markup=kb.manage_inline_kb)
     if msg.text == '🛒 Ассортимент':
-        await msg.answer(MSG, parse_mode=types.ParseMode.HTML, reply_markup=kb.manage_inline_kb)
+        await msg.answer(getMSG(), parse_mode=types.ParseMode.HTML, reply_markup=kb.manage_inline_kb)
     if msg.text == 'Назад':
         await msg.answer('Главное меню', reply_markup=kb.main_kb)
-
-    if msg.text == "Левый берег":
-        await msg.answer(presentForUser("Л"), reply_markup=kb.manage_inline_l_kb, parse_mode="HTML")
-    if msg.text == "Правый берег":
-        await msg.answer(presentForUser('П'), reply_markup=kb.manage_inline_r_kb, parse_mode="HTML")
 
     if msg.text == 'Создать рассылку':
         if isAdmin(msg.from_user.id):
             await Mainling.mail.set()
             await msg.answer("Введите текст рассылки:")
-    if msg.text == "Показать все строки":
+    if msg.text == "Задать новое главное сообщение":
         if isAdmin(msg.from_user.id):
-            for value in prod_cur.execute("SELECT *, rowid FROM products"):
-                await msg.answer(value)
-    if msg.text == "Добавить строку":
-        if isAdmin(msg.from_user.id):
-            await SetProd.prod.set()
-            await msg.answer("Введите данные: \n *Пример* Название Вскус Крепкость Цена Район(Ц/Б/Д/C/К)")
-    if msg.text == "Удалить строку":
-        if isAdmin(msg.from_user.id):
-            await DelProd.prod.set()
-            await msg.answer("Введите номер строки, которую хотите удалить")
+            await MainMsg.mess.set()
+            await msg.answer("Введите новое главное сообщение, которое будет отображаться пользователям: ")
 
-    # if msg.text == "111":
-    #    for value in user_cur.execute('''SELECT * FROM users'''):
-    #        print(value)
-    # if msg.text == "222":
-    #    presentForUser("П")
-
-
-@dp.message_handler(state=DelProd.prod)
-async def process_del_data(msg: types.Message, state: FSMContext):
-    await state.update_data(prod=msg.text)
-    await DelProd.next()
+# -- State handlers --
+@dp.message_handler(state=MainMsg.mess)
+async def procces_MainMsg_data(msg: types.Message, state: FSMContext):
+    await state.update_data(mess=msg.text)
+    await MainMsg.next()
     yesButton = KeyboardButton("Да!")
     noButton = KeyboardButton("Нет")
     accept_kb_prod = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1).add(yesButton, noButton)
     await msg.answer("Подтвердить?", reply_markup=accept_kb_prod)
 
 
-@dp.message_handler(state=DelProd.accept)
-async def process_accept(msg: types.Message, state: FSMContext):
+@dp.message_handler(state=MainMsg.accept)
+async def procces_accept(msg: types.Message, state: FSMContext):
     if msg.text == "Да!":
-        prod_data = await state.get_data()
-        dell = prod_data['prod']
-        prod_cur.execute(f"DELETE FROM products WHERE rowid = '{dell}'")
-        prod_db.commit()
+        new_msg = await state.get_data()
+        setMSG(new_msg['mess'])
         await state.finish()
-        await msg.answer("Запись успешно удалена!", reply_markup=kb.admin_kb)
+        await msg.answer('Все готово!', reply_markup=kb.admin_kb)
     else:
         await state.finish()
-        await msg.answer("Главное меню: ", reply_markup=kb.admin_kb)
-
-
-@dp.message_handler(state=SetProd.prod)
-async def prosess_get_data(msg: types.Message, state: FSMContext):
-    await state.update_data(prod=msg.text)
-    await SetProd.next()
-    yesButton = KeyboardButton("Да!")
-    noButton = KeyboardButton("Нет")
-    accept_kb_prod = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1).add(yesButton, noButton)
-    await msg.answer("Подтвердить?", reply_markup=accept_kb_prod)
-
-
-@dp.message_handler(state=SetProd.accept)
-async def process_accept(msg: types.Message, state: FSMContext):
-    if msg.text == "Да!":
-        prod_data = await state.get_data()
-        if not presentForDb(prod_data['prod']):
-            await msg.answer("Некорректный ввод, попробуйте еще раз!")
-            await SetProd.prod.set()
-        else:
-            prod_cur.execute(f"INSERT INTO products VALUES (?, ?, ?, ?, ?)", (presentForDb(prod_data['prod'])))
-            prod_db.commit()
-            await msg.answer("Запись добавлена!", reply_markup=kb.admin_kb)
-            await state.finish()
-    else:
-        await state.finish()
-        await msg.answer("Главное меню: ", reply_markup=kb.admin_kb)
+        await msg.answer("-- Главное меню --", reply_markup=kb.admin_kb)
 
 
 @dp.message_handler(state=Mainling.mail)
@@ -272,7 +157,8 @@ async def process_accept(msg: types.Message, state):
         await state.finish()
     else:
         await state.finish()
-        await msg.answer("Главное меню: ", reply_markup=kb.admin_kb)
+        await msg.answer("-- Главное меню --", reply_markup=kb.admin_kb)
+
 
 
 if __name__ == "__main__":
