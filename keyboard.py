@@ -19,13 +19,7 @@ media_buttons = [InlineKeyboardButton(text="👨🏻‍💻Вконтакте", 
 media_inline_kb = InlineKeyboardMarkup(row_width=1)
 media_inline_kb.add(*media_buttons)
 
-# -- Manage --
-#manage_btn_1 = InlineKeyboardMarkup(text="Менеджер", url="t.me/sqdmiller")
-#manage_btn_2 = InlineKeyboardMarkup(text="Менеджер", url="t.me/sqdmiller")
-
-#manage_inline_l_kb = InlineKeyboardMarkup(row_width=1).add(manage_btn_1)
-#manage_inline_r_kb = InlineKeyboardMarkup(row_width=1).add(manage_btn_2)
-
+# --Manage buttons--
 manage_buttons = [InlineKeyboardButton(text="Менеджер", url="t.me/sqdmiller"),
                   InlineKeyboardButton(text="Менеджер НГ", url="t.me/Evrey_Evrey"),
                   ]

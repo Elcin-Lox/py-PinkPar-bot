@@ -1,20 +1,21 @@
+def str_insert(id: int, val: str, st: str) -> str:
+    return st[:id] + val + st[id:]
 
-"""
-def getMSG() -> str:
-    global mess_file
-    message = mess_file.read()
-    if message != "":
-        return message
-    else:
-        return MSG1
-"""
 
-"""
-def setMSG(message: str) -> None:
-    if message == "" or message == None:
-        return
-    mess_file.write(message)
-"""
+def ref_str(string_: str) -> str:
+    is_open_tag = True
+    i = 0
+    while i < len(string_):
+        if string_[i] == "➖":
+            if is_open_tag:
+                string_ = str_insert(i + 1, f'{"<b>"}', string_)
+                is_open_tag = False
+            else:
+                string_ = str_insert(i + 1, f'{"</b>"}', string_)
+                is_open_tag = True
+        i += 1
+    return string_
+
 
 def getMSG() -> str:
     global MSG1
@@ -26,11 +27,10 @@ def getMSG() -> str:
 def setMSG(message: str) -> None:
     global MSG1
     if message is not None:
-        MSG1 = message
+        MSG1 = ref_str(message)
 
 
 MSG2 = ""
-
 
 MSG1 = f"""
     ЖИДКОСТИ 👇🏻 
@@ -191,4 +191,3 @@ Santi - 1900р{"</b>"}
 Испаритель Charon baby plus (0.4ОМ) - 210р
 Испаритель Aegis Hero/Boost (0.4ОМ) - 250р
 """
-
