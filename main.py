@@ -31,6 +31,8 @@ class MainMsg(StatesGroup):
     accept = State()
 
 
+ToSeV = ""
+
 # --- DataBase's ---
 user_db = sqlite3.connect('user.db')
 
@@ -102,23 +104,81 @@ async def cancel(msg: types.Message, state: FSMContext):
 # -- Message handlers --
 @dp.message_handler()
 async def media(msg: types.Message):
+
+    user_cur.execute('''SELECT user_id FROM users ''')
+    if not isUserExists(msg.from_user.id, user_cur):
+        user_cur.execute(f'''INSERT INTO users VALUES (?, ?, ?)''',
+                         (str(msg.from_user.first_name), msg.from_user.id, dt.now()))
+        print(dt.now().isoformat(sep='T'))
+        user_db.commit()
+
+    global ToSeV
+
     if msg.text == "📲 Соц. сети":
         await msg.answer("Найти вы нас можете тут:", reply_markup=kb.media_inline_kb)
     if msg.text == "🧑🏼‍💻 Менеджер":
         await msg.answer("Сделать заказ:", reply_markup=kb.manage_inline_kb)
+
+
     if msg.text == '🛒 Ассортимент':
-        await msg.answer(getMSG(), parse_mode=types.ParseMode.HTML, reply_markup=kb.manage_inline_kb)
+        await msg.answer("Выберете", reply_markup=kb.smt_kb)
+    if msg.text == "Ассортимент здесь":
+        await msg.answer("Выберете", reply_markup=kb.choose_kb)
+    if msg.text == "Гугл таблица":
+        await msg.answer("Гугл таблица \n https://docs.google.com/spreadsheets/d/1QPX7Qbq_Fp0cW6L3Sgql4ZZAkVEQjsRWH4YX9ImRT1M/edit#gid=0", reply_markup=kb.main_kb)
+
+    if msg.text == "Жидкости 🧪":
+        await msg.answer(getMSG("L"), parse_mode=types.ParseMode.HTML, reply_markup=kb.manage_inline_kb)
+    if msg.text == "Под-Системы 💨":
+        await msg.answer(getMSG("V"), parse_mode=types.ParseMode.HTML, reply_markup=kb.manage_inline_kb)
+    if msg.text == "Расходники ⚙":
+        await msg.answer(getMSG("C"), parse_mode=types.ParseMode.HTML, reply_markup=kb.manage_inline_kb)
+    if msg.text == "Одноразовые электронные сигареты 😶‍🌫️":
+        await msg.answer(getMSG("O"), parse_mode=types.ParseMode.HTML, reply_markup=kb.manage_inline_kb)
+
     if msg.text == 'Назад':
         await msg.answer('Главное меню', reply_markup=kb.main_kb)
+
+
+    if msg.text == "🔙 Главное меню":
+        if isAdmin(msg.from_user.id):
+            await msg.answer("-- Главное меню -- ", reply_markup=kb.admin_kb)
+        else:
+            await msg.answer("-- Главное меню --", reply_markup=kb.main_kb)
 
     if msg.text == 'Создать рассылку':
         if isAdmin(msg.from_user.id):
             await Mainling.mail.set()
             await msg.answer("Введите текст рассылки:")
+
     if msg.text == "Задать новое главное сообщение":
         if isAdmin(msg.from_user.id):
+            await msg.answer("Выберите тип задаваемого сообщения ->", reply_markup=kb.setMess_kb)
+
+    if msg.text == 'Задать сообщение "Жидкости"':
+        if isAdmin(msg.from_user.id):
+            ToSeV = "L"
             await MainMsg.mess.set()
-            await msg.answer("Введите новое главное сообщение, которое будет отображаться пользователям: ")
+            await msg.answer("Введите новое сообщение, которое будет отображаться пользователям: ")
+
+    if msg.text == 'Задать сообщение "Под-системы"':
+        if isAdmin(msg.from_user.id):
+            ToSeV = "V"
+            await MainMsg.mess.set()
+            await msg.answer("Введите новое сообщение, которое будет отображаться пользователям: ")
+
+    if msg.text == 'Задать сообщение "Расходники"':
+        if isAdmin(msg.from_user.id):
+            ToSeV = "C"
+            await MainMsg.mess.set()
+            await msg.answer("Введите новое сообщение, которое будет отображаться пользователям: ")
+
+    if msg.text == 'Задать сообщение "Одноразовые"':
+        if isAdmin(msg.from_user.id):
+            ToSeV = "O"
+            await MainMsg.mess.set()
+            await msg.answer("Введите новое сообщение, которое будет отображаться пользователям: ")
+
 
 # -- State handlers --
 @dp.message_handler(state=MainMsg.mess)
@@ -133,9 +193,11 @@ async def procces_MainMsg_data(msg: types.Message, state: FSMContext):
 
 @dp.message_handler(state=MainMsg.accept)
 async def procces_accept(msg: types.Message, state: FSMContext):
+    global ToSeV
     if msg.text == "Да!":
         new_msg = await state.get_data()
-        setMSG(new_msg['mess'])
+        print(ToSeV)
+        setMSG(ToSeV, new_msg['mess'])
         await state.finish()
         await msg.answer('Все готово!', reply_markup=kb.admin_kb)
     else:
