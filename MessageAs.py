@@ -21,13 +21,13 @@ def ref_str(string_: str) -> str:
 def setMSG(_type: str, message: str) -> None:
     file = ""
     if _type == "L":
-        file = open("TextMess/LiqMess.txt", 'w', encoding="utf-8")
+        file = open("LiqMess.txt", 'w', encoding="utf-8")
     elif _type == "V":
-        file = open("TextMess/VapeMess.txt", 'w', encoding="utf-8")
+        file = open("VapeMess.txt", 'w', encoding="utf-8")
     elif _type == "C":
-        file = open("TextMess/ConsMess.txt", 'w', encoding="utf-8")
+        file = open("ConsMess.txt", 'w', encoding="utf-8")
     elif _type == "O":
-        file = open("TextMess/OneVapeMess.txt", 'w', encoding="utf-8")
+        file = open("OneVapeMess.txt", 'w', encoding="utf-8")
     else:
         return 1
     file.write(ref_str(message))
@@ -37,13 +37,13 @@ def setMSG(_type: str, message: str) -> None:
 def getMSG(_type: str) -> str:
     file = None
     if _type == "L":
-        file = open("TextMess/LiqMess.txt", 'r', encoding="utf-8")
+        file = open("LiqMess.txt", 'r', encoding="utf-8")
     elif _type == "V":
-        file = open("TextMess/VapeMess.txt", 'r', encoding="utf-8")
+        file = open("VapeMess.txt", 'r', encoding="utf-8")
     elif _type == "C":
-        file = open("TextMess/ConsMess.txt", 'r', encoding="utf-8")
+        file = open("ConsMess.txt", 'r', encoding="utf-8")
     elif _type == "O":
-        file = open("TextMess/OneVapeMess.txt", 'r', encoding="utf-8")
+        file = open("OneVapeMess.txt", 'r', encoding="utf-8")
     else:
         return ""
     mess = file.read()
