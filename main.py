@@ -122,9 +122,9 @@ async def media(msg: types.Message):
 
     if msg.text == '🛒 Ассортимент':
         await msg.answer("Выберете", reply_markup=kb.smt_kb)
-    if msg.text == "Ассортимент здесь":
+    if msg.text == "Ассортимент здесь 👇🏻":
         await msg.answer("Выберете", reply_markup=kb.choose_kb)
-    if msg.text == "Гугл таблица":
+    if msg.text == "Гугл таблица 📝":
         await msg.answer("Гугл таблица \n https://docs.google.com/spreadsheets/d/1QPX7Qbq_Fp0cW6L3Sgql4ZZAkVEQjsRWH4YX9ImRT1M/edit#gid=0", reply_markup=kb.main_kb)
 
     if msg.text == "Жидкости 🧪":
@@ -140,7 +140,7 @@ async def media(msg: types.Message):
         await msg.answer('Главное меню', reply_markup=kb.main_kb)
 
 
-    if msg.text == "🔙 Главное меню":
+    if msg.text == "Главное меню 🔙":
         if isAdmin(msg.from_user.id):
             await msg.answer("-- Главное меню -- ", reply_markup=kb.admin_kb)
         else:

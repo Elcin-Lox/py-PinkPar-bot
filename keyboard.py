@@ -2,7 +2,7 @@ from aiogram.types import \
     ReplyKeyboardMarkup, KeyboardButton, \
     InlineKeyboardMarkup, InlineKeyboardButton
 
-mainMenuBtn = KeyboardButton("🔙 Главное меню")
+mainMenuBtn = KeyboardButton("Главное меню 🔙")
 
 # ---Main menu---
 rangeButton = KeyboardButton("🛒 Ассортимент")
@@ -15,8 +15,8 @@ main_kb.row(messengerButton)
 main_kb.insert(mediaButton)
 
 # --- Smt menu ---
-smt1btn = KeyboardButton("Ассортимент здесь")
-smt2btn = KeyboardButton("Гугл таблица")
+smt1btn = KeyboardButton("Ассортимент здесь 👇🏻")
+smt2btn = KeyboardButton("Гугл таблица 📝")
 smt_kb = ReplyKeyboardMarkup(resize_keyboard=True).add(smt1btn)
 smt_kb.add(smt2btn)
 smt_kb.add(mainMenuBtn)
